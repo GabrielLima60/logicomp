@@ -53,5 +53,5 @@ def satisfiability_brute_force(formula):
             return True
         else:
             pass
-
+    return False
 
