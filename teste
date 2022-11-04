@@ -1,0 +1,41 @@
+from formula import *
+from functions import *
+from semantics import *
+import pandas as pd
+
+def regras(arquivo):
+    df = pd.read_csv(arquivo)
+    df = df.drop(index=(df.index[df['P'] == 0]))
+    df = df.drop('P', axis= 1)
+
+    #é criada uma formula que será sempre falsa e em que serão incluidas outras formulas com conectivos OR
+    formulaTotal = And(Atom('a'),Not(Atom('a')))
+
+    for index, row in df.iterrows():
+        #é criada uma formula que será sempre verdadeira e em que serão incluidas outras formulas com conectivos AND
+        formulaInterna = Or(Atom('a'),Not(Atom('a')))
+
+        for atomica in row.index:
+            if row[atomica] == 0:
+                formulaInterna = And(formulaInterna, Not(Atom(atomica)))
+            else:
+                formulaInterna = And(formulaInterna, Atom(atomica))
+        formulaTotal = Or(formulaInterna, formulaTotal)
+
+    if satisfiability_brute_force(formulaTotal):
+        return formulaTotal
+    else:
+        print('conjunto de regras não satisfatível')
+
+
+
+print('arquivo 3a_2p: ' + str(regras('column_bin_3a_2p.csv')))
+print('\n')
+print('arquivo 3a_3p: ' + str(regras('column_bin_3a_3p.csv')))
+print('\n')
+print('arquivo 3a_4p: ' + str(regras('column_bin_3a_4p.csv')))
+print('\n')
+print('arquivo 3a_5p: ' + str(regras('column_bin_3a_5p.csv')))
+print('\n')
+print('arquivo 3a_6p: ' + str(regras('column_bin_3a_6p.csv')))
+
